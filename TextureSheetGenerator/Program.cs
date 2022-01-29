@@ -29,9 +29,8 @@ class Program
         
         if(files.Length <= 1)
         {
-            Console.WriteLine("Not enougth images.");
-            Thread.Sleep(1000);
-            Environment.Exit(0);
+            Console.WriteLine("Not enough images.");
+            Shutdown();
         }
 
         Splicer splicer = new Splicer();
