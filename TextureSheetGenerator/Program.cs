@@ -1,8 +1,10 @@
-﻿using System.Drawing;
+﻿using System.Diagnostics;
+using System.Drawing;
 using TextureSplicer;
 
 class Program
 {
+    private const string explorer = "explorer.exe";
     static readonly string inputPath = Path.Combine(Environment.CurrentDirectory, "Input");
     static readonly string outputPath = Path.Combine(Environment.CurrentDirectory, "Output");
     static void Main()
@@ -10,7 +12,7 @@ class Program
         if(Environment.OSVersion.Platform != PlatformID.Win32NT)
         {
             Console.WriteLine("Platform not supported.");
-            Console.WriteLine("This application is only supported on windows 32NT or later.");
+            Console.WriteLine("This application is only supported on windows32NT or later.");
             Shutdown();
         }
 
@@ -18,6 +20,7 @@ class Program
         {
             Console.WriteLine("InputFolder is missing generating...");
             Directory.CreateDirectory(inputPath);
+            Process.Start(explorer ,inputPath);
             Shutdown();
         }
         if (!Directory.Exists(outputPath))
@@ -41,6 +44,7 @@ class Program
         string outputLocation = outputPath + "\\" + $"{DateTime.Now.TimeOfDay.Seconds}.{DateTime.Today.Minute}.{DateTime.Now.Hour}.{DateTime.Now.Day}.{DateTime.Now.Month}.{DateTime.Now.Year}" + ".png";
         bitmap.Save(outputLocation);
         Console.WriteLine("Saved sheet at \"{0}\"", outputLocation);
+        Process.Start(explorer, outputPath);
         Console.WriteLine("Done.");
         Shutdown();
     }
