@@ -23,7 +23,7 @@ namespace TextureSplicer
             spriteSheet = new Bitmap((int)(sqrt * heightAndWidth.X), (int)(sqrt * heightAndWidth.Y));
             Console.WriteLine("Atlas size {0}x{1}", spriteSheet.Height, spriteSheet.Width);
 
-            Vector2 offset = new Vector2(0, spriteSheet.Height - heightAndWidth.Y);
+            Vector2 offset = new Vector2(0, 0);
             for (int i = 0; i < bitmaps.Count; i++)
             {
                 Lazy<Bitmap>? lazyBitmap = bitmaps[i];
@@ -33,7 +33,7 @@ namespace TextureSplicer
 
                 if (offset.X >= spriteSheet.Width)
                 {
-                    offset.Y = Math.Clamp(offset.Y - heightAndWidth.Y, 0, spriteSheet.Height - heightAndWidth.Y);
+                    offset.Y = Math.Clamp(offset.Y + heightAndWidth.Y, 0, spriteSheet.Height - heightAndWidth.Y);
                     offset.X = 0;
                 }
 
