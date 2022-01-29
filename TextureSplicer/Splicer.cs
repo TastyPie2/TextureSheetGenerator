@@ -6,12 +6,15 @@ namespace TextureSplicer
 {
     public class Splicer
     {
-        public static Bitmap SpliceTextures(string[] filePaths)
+        Bitmap spriteSheet = null;
+        List<Lazy<Bitmap>?> bitmaps;
+
+        public Bitmap SpliceTextures(string[] filePaths)
         {
+            List<Task> spliceTasks = new List<Task>();
 #pragma warning disable CA1416
-            Bitmap spriteSheet;
 #pragma warning disable CS8619
-            List<Lazy<Bitmap>?> bitmaps = LoadLazyBitmaps(filePaths);
+            bitmaps = LoadLazyBitmaps(filePaths);
 #pragma warning restore CS8619
 
             Vector2 heightAndWidth = new Vector2(bitmaps[0].Value.Width, bitmaps[0].Value.Height);
@@ -23,8 +26,6 @@ namespace TextureSplicer
             Vector2 offset = new Vector2(0, spriteSheet.Height - heightAndWidth.Y);
             for (int i = 0; i < bitmaps.Count; i++)
             {
-                Console.WriteLine("Bitmap {0}/{1}", i, bitmaps.Count);
-                Console.WriteLine("Offset: {0}X {1}Y", offset.X, offset.Y);
                 Lazy<Bitmap>? lazyBitmap = bitmaps[i];
                 
                 if (lazyBitmap == null)
@@ -37,17 +38,31 @@ namespace TextureSplicer
                 }
 
                 Bitmap bitmap = lazyBitmap.Value;
-                Dictionary<Vector2, Color> pixels = GetAllPixels(bitmap);
 
-                foreach (KeyValuePair<Vector2, Color> pixel in pixels)
-                {
-                    spriteSheet.SetPixel((int)(pixel.Key.X + offset.X), (int)(pixel.Key.Y + offset.Y), pixel.Value);
-                }
+                spliceTasks.Add(SpliceTextureAsync(bitmap, offset, i));
 
                 offset.X += heightAndWidth.X;
             }
 
+            Task.WaitAll(spliceTasks.ToArray());
             return spriteSheet;
+        }
+
+        private async Task SpliceTextureAsync(Bitmap bitmap, Vector2 offset, int index)
+        {
+            await Task.Run(() => 
+            {  
+                Dictionary<Vector2, Color> pixels = GetAllPixels(bitmap);
+
+                foreach (KeyValuePair<Vector2, Color> pixel in pixels)
+                {
+                    lock (spriteSheet)
+                    {
+                        spriteSheet.SetPixel((int)(pixel.Key.X + offset.X), (int)(pixel.Key.Y + offset.Y), pixel.Value);
+                    }
+                }
+                Console.WriteLine("Bitmap {0}/{1}", index, bitmaps.Count);
+            });
         }
 
         private static Dictionary<Vector2, Color> GetAllPixels(Bitmap bitmap)

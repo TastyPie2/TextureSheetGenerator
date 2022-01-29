@@ -28,9 +28,10 @@ class Program
             Environment.Exit(0);
         }
 
+        Splicer splicer = new Splicer();
 
         Console.WriteLine("Assebling texture sheet...");
-        Bitmap bitmap = Splicer.SpliceTextures(files);
+        Bitmap bitmap = splicer.SpliceTextures(files);
         Console.WriteLine("Done\nSaving sheet...");
         string outputLocation = outputPath + "\\" + $"{DateTime.Now.TimeOfDay.Seconds}.{DateTime.Today.Minute}.{DateTime.Now.Hour}.{DateTime.Now.Day}.{DateTime.Now.Month}.{DateTime.Now.Year}" + ".png";
         bitmap.Save(outputLocation);
