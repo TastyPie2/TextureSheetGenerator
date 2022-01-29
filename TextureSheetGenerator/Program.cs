@@ -7,12 +7,18 @@ class Program
     static readonly string outputPath = Path.Combine(Environment.CurrentDirectory, "Output");
     static void Main()
     {
+        if(Environment.OSVersion.Platform != PlatformID.Win32NT)
+        {
+            Console.WriteLine("Platform not supported.");
+            Console.WriteLine("This application is only supported on windows 32NT or later.");
+            Shutdown();
+        }
+
         if (!Directory.Exists(inputPath))
         {
             Console.WriteLine("InputFolder is missing generating...");
             Directory.CreateDirectory(inputPath);
-            Thread.Sleep(1000);
-            Environment.Exit(0);
+            Shutdown();
         }
         if (!Directory.Exists(outputPath))
         {
@@ -37,7 +43,13 @@ class Program
         bitmap.Save(outputLocation);
         Console.WriteLine("Saved sheet at \"{0}\"", outputLocation);
         Console.WriteLine("Done.");
+        Shutdown();
+    }
+
+    static void Shutdown()
+    {
         Console.WriteLine("Press enter to close the application...");
         Console.Read();
+        Environment.Exit(0);
     }
 }
